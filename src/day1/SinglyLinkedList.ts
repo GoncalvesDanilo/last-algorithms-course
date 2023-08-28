@@ -14,6 +14,7 @@ export default class SinglyLinkedList<T> {
   }
 
   prepend(item: T): void {
+    this.length++;
     if (!this.head) {
       this.head = this.tail = { value: item } as Node<T>;
       return;
@@ -21,11 +22,13 @@ export default class SinglyLinkedList<T> {
 
     const head = this.head;
     this.head = { value: item, next: head } as Node<T>;
-    this.length++;
   }
 
   insertAt(item: T, idx: number): void {
     if (!this.head) return;
+
+    this.length++;
+
     let node = this.head;
     for (let i = 0; i < idx; i++) {
       if (i === idx - 1) {
@@ -35,10 +38,10 @@ export default class SinglyLinkedList<T> {
         if (node.next) node = node.next;
       }
     }
-    this.length++;
   }
 
   append(item: T): void {
+    this.length++;
     if (!this.tail) {
       this.head = this.tail = { value: item } as Node<T>;
       return;
@@ -47,21 +50,94 @@ export default class SinglyLinkedList<T> {
     const tail = { value: item } as Node<T>;
     this.tail.next = tail;
     this.tail = this.tail.next;
-    this.length++;
   }
 
   remove(item: T): T | undefined {
+    let curr = this.head;
+    let prev: Node<T> | undefined = undefined;
+    for (let i = 0; curr && this.length; i++) {
+      if (curr.value === item) {
+        break;
+      }
+      prev = curr;
+      curr = curr.next;
+    }
 
+    if (!curr) {
+      return undefined;
+    }
+
+    this.length--;
+
+    if (this.length === 0) {
+      const value = this.head?.value;
+      this.head = undefined;
+      return value;
+    }
+
+    if (prev) {
+      prev.next = curr.next;
+    }
+
+    if (curr === this.head) {
+      this.head = curr.next;
+    }
+
+    return curr.value;
   }
 
   get(idx: number): T | undefined {
-    if (!this.head) return;
-    let node = this.head;
-    for (let i = 0; i < idx; i++) {
-      if (i === idx - 1) return node.next?.value;
+    if (idx > this.length) {
+      return undefined;
     }
+
+    let node = this.head;
+
+    for (let i = 0; node && i <= idx; i++) {
+      if (i === idx) {
+        return node.value;
+      }
+      node = node.next;
+    }
+
     return undefined;
   }
 
-  removeAt(idx: number): T | undefined {}
+  removeAt(idx: number): T | undefined {
+    if (idx > this.length) {
+      return undefined;
+    }
+
+    let curr = this.head;
+    let prev: Node<T> | undefined = undefined;
+    for (let i = 0; curr && idx; i++) {
+      if (i === idx) {
+        break;
+      }
+      prev = curr;
+      curr = curr.next;
+    }
+
+    if (!curr) {
+      return undefined;
+    }
+
+    this.length--;
+
+    if (this.length === 0) {
+      const value = this.head?.value;
+      this.head = undefined;
+      return value;
+    }
+
+    if (prev) {
+      prev.next = curr.next;
+    }
+
+    if (curr === this.head) {
+      this.head = curr.next;
+    }
+
+    return curr.value;
+  }
 }
